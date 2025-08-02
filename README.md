@@ -1,10 +1,11 @@
 # 🏥 Diabetes Prediction MLOps Pipeline for Singapore Healthcare
 
-[![CI/CD Pipeline](https://github.com/username/diabetes-prediction-mlops/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/username/diabetes-prediction-mlops/actions)
+
 [![MLflow](https://img.shields.io/badge/MLflow-Experiment%20Tracking-blue)](http://localhost:5000)
 [![Prefect](https://img.shields.io/badge/Prefect-Workflow%20Orchestration-purple)](http://localhost:4200)
 [![FastAPI](https://img.shields.io/badge/FastAPI-Model%20Serving-green)](http://localhost:8000/docs)
 [![Terraform](https://img.shields.io/badge/Terraform-Infrastructure-purple)](./deployment/terraform)
+[![CI/CD Pipeline](https://github.com/rayluo88/diabetes-prediction-mlops/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/rayluo88/diabetes-prediction-mlops/actions)
 
 > **📋 For detailed evaluation instructions and evidence of implementation, see [Evaluation_Guide.md](Evaluation_Guide.md)**
 
@@ -83,7 +84,7 @@ graph TB
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/username/diabetes-prediction-mlops.git
+git clone https://github.com/rayluo88/diabetes-prediction-mlops.git
 cd diabetes-prediction-mlops
 ```
 
@@ -398,7 +399,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Project Maintainer**: [Your Name](mailto:your.email@example.com)
 - **LinkedIn**: [Your LinkedIn Profile](https://linkedin.com/in/yourprofile)
-- **Project Repository**: [GitHub](https://github.com/username/diabetes-prediction-mlops)
+- **Project Repository**: [GitHub](https://github.com/rayluo88/diabetes-prediction-mlops)
 
 ## 🙏 Acknowledgments
 
