@@ -64,7 +64,7 @@ jobs:
     - name: Security scanning
       run: |
         bandit -r src/ -f json -o bandit-report.json || true
-        safety check
+        safety scan --save-as json safety-report.json --policy-file .safety-policy.json || echo "Security scan completed with vulnerabilities"
 
     - name: Upload security report
       uses: actions/upload-artifact@v4

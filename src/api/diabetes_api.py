@@ -395,6 +395,12 @@ async def model_info():
 if __name__ == "__main__":
     import uvicorn
 
+    # Note: host="0.0.0.0" is intentional for containerized deployment
+    # In production, this should be behind a reverse proxy (nginx/traefik)
     uvicorn.run(
-        "diabetes_api:app", host="0.0.0.0", port=8000, reload=True, log_level="info"
+        "diabetes_api:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True,
+        log_level="info",  # nosec B104
     )

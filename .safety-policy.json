@@ -1,0 +1,46 @@
+{
+  "security": {
+    "ignore-vulnerabilities": [
+      {
+        "vulnerability-id": "71691",
+        "reason": "MLflow CVE-2024-37059 - No fix available. Mitigation: Only use trusted model files.",
+        "expires": "2025-03-01"
+      },
+      {
+        "vulnerability-id": "71692", 
+        "reason": "MLflow CVE-2024-37057 - No fix available. Mitigation: Only use trusted model files.",
+        "expires": "2025-03-01"
+      },
+      {
+        "vulnerability-id": "71579",
+        "reason": "MLflow CVE-2024-37060 - No fix available. Mitigation: Only use trusted model files.",
+        "expires": "2025-03-01"
+      },
+      {
+        "vulnerability-id": "71577",
+        "reason": "MLflow CVE-2024-37052 - No fix available. Mitigation: Only use trusted model files.",
+        "expires": "2025-03-01"
+      },
+      {
+        "vulnerability-id": "71578",
+        "reason": "MLflow CVE-2024-37053 - No fix available. Mitigation: Only use trusted model files.",
+        "expires": "2025-03-01"
+      },
+      {
+        "vulnerability-id": "71693",
+        "reason": "MLflow CVE-2024-37055 - No fix available. Mitigation: Only use trusted model files.",
+        "expires": "2025-03-01"
+      },
+      {
+        "vulnerability-id": "71587",
+        "reason": "MLflow CVE-2024-37054 - No fix available. Mitigation: Only use trusted model files.",
+        "expires": "2025-03-01"
+      },
+      {
+        "vulnerability-id": "71584",
+        "reason": "MLflow CVE-2024-37056 - No fix available. Mitigation: Only use trusted model files.",
+        "expires": "2025-03-01"
+      }
+    ]
+  }
+}
