@@ -24,15 +24,11 @@ setup: ## Complete project setup (install + dev tools + pre-commit)
 
 install: ## Install production dependencies
 	@echo "📦 Installing production dependencies..."
-	pip install --upgrade pip
-	pip install -r requirements.txt
+	python install_deps.py
 
 install-dev: ## Install development dependencies
-	@echo "📦 Installing development dependencies..."
-	pip install --upgrade pip
-	pip install -r requirements.txt
-	pip install pytest pytest-cov black flake8 isort mypy pre-commit bandit safety
-	pip install jupyter notebook nbqa yamllint markdownlint-cli
+	@echo "📦 Installing all dependencies..."
+	python install_deps.py --dev
 
 clean: ## Clean up generated files and caches
 	@echo "🧹 Cleaning up..."

@@ -95,12 +95,17 @@ python -m venv diabetes-mlops-env
 source diabetes-mlops-env/bin/activate  # Linux/Mac
 # diabetes-mlops-env\Scripts\activate  # Windows
 
-# Install dependencies
-pip install -r requirements.txt
+# Install dependencies (handles conflicts automatically)
+python install_deps.py --dev
+
+# Or use Makefile
+make install-dev
 
 # Install pre-commit hooks
 pre-commit install
 ```
+
+> **Note**: The project uses a custom installation script to resolve dependency conflicts between Prefect 3.4.11 and Pydantic. This ensures compatible versions are installed correctly.
 
 ### 3. Run Complete Pipeline
 ```bash
