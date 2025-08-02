@@ -1,5 +1,7 @@
 # 🏥 Diabetes Prediction MLOps Pipeline for Singapore Healthcare
 
+> **📋 For detailed evaluation instructions and evidence of implementation, see [Evaluation_Guide.md](Evaluation_Guide.md)**
+
 [![CI/CD Pipeline](https://github.com/username/diabetes-prediction-mlops/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/username/diabetes-prediction-mlops/actions)
 [![MLflow](https://img.shields.io/badge/MLflow-Experiment%20Tracking-blue)](http://localhost:5000)
 [![Prefect](https://img.shields.io/badge/Prefect-Workflow%20Orchestration-purple)](http://localhost:4200)
