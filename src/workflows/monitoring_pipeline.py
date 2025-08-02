@@ -13,15 +13,15 @@ from typing import Dict, List, Optional
 # Add src to Python path (must be before local imports)
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-import numpy as np
-import pandas as pd
-from prefect import flow, get_run_logger, task
-from prefect.deployments import Deployment
-from prefect.schedules import IntervalSchedule
-from prefect.task_runners import SequentialTaskRunner
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+from prefect import flow, get_run_logger, task  # noqa: E402
+from prefect.deployments import Deployment  # noqa: E402
+from prefect.schedules import IntervalSchedule  # noqa: E402
+from prefect.task_runners import SequentialTaskRunner  # noqa: E402
 
-from monitoring.diabetes_monitor import DiabetesModelMonitor, load_model_and_predict
-from workflows.training_pipeline import diabetes_training_flow
+from monitoring.diabetes_monitor import DiabetesModelMonitor, load_model_and_predict  # noqa: E402
+from workflows.training_pipeline import diabetes_training_flow  # noqa: E402
 
 
 @task(name="load_monitoring_data", retries=2)

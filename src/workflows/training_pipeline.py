@@ -12,15 +12,15 @@ from datetime import datetime, timedelta
 # Add src to Python path (must be before local imports)
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-import pandas as pd
-from prefect import flow, get_run_logger, task
-from prefect.deployments import Deployment
-from prefect.schedules import CronSchedule
-from prefect.task_runners import SequentialTaskRunner
+import pandas as pd  # noqa: E402
+from prefect import flow, get_run_logger, task  # noqa: E402
+from prefect.deployments import Deployment  # noqa: E402
+from prefect.schedules import CronSchedule  # noqa: E402
+from prefect.task_runners import SequentialTaskRunner  # noqa: E402
 
-from data.load_diabetes_data import main as load_data
-from data.preprocess import preprocess_diabetes_data
-from models.train_diabetes_model import DiabetesModelTrainer
+from data.load_diabetes_data import main as load_data  # noqa: E402
+from data.preprocess import preprocess_diabetes_data  # noqa: E402
+from models.train_diabetes_model import DiabetesModelTrainer  # noqa: E402
 
 
 @task(name="load_diabetes_dataset", retries=2, retry_delay_seconds=10)

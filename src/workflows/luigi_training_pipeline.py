@@ -13,12 +13,12 @@ from datetime import datetime, timedelta
 # Add src to Python path (must be before local imports)
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-import luigi
-import pandas as pd
+import luigi  # noqa: E402
+import pandas as pd  # noqa: E402
 
-from data.load_diabetes_data import main as load_data
-from data.preprocess import preprocess_diabetes_data
-from models.train_diabetes_model import DiabetesModelTrainer
+from data.load_diabetes_data import main as load_data  # noqa: E402
+from data.preprocess import preprocess_diabetes_data  # noqa: E402
+from models.train_diabetes_model import DiabetesModelTrainer  # noqa: E402
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

@@ -13,17 +13,17 @@ from typing import Dict, List
 # Add src to Python path (must be before local imports)
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-import joblib
-import mlflow
-import mlflow.sklearn
-import numpy as np
-import pandas as pd
-from prefect import flow, get_run_logger, task
-from prefect.deployments import Deployment
-from prefect.schedules import IntervalSchedule
-from prefect.task_runners import SequentialTaskRunner
+import joblib  # noqa: E402
+import mlflow  # noqa: E402
+import mlflow.sklearn  # noqa: E402
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+from prefect import flow, get_run_logger, task  # noqa: E402
+from prefect.deployments import Deployment  # noqa: E402
+from prefect.schedules import IntervalSchedule  # noqa: E402
+from prefect.task_runners import SequentialTaskRunner  # noqa: E402
 
-from data.preprocess import DiabetesPreprocessor
+from data.preprocess import DiabetesPreprocessor  # noqa: E402
 
 
 @task(name="load_champion_model", retries=2)

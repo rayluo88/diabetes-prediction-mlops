@@ -15,23 +15,23 @@ from typing import Dict, List, Optional
 # Add src to Python path (must be before local imports)
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-import joblib
-import mlflow
-import mlflow.sklearn
-import numpy as np
-import pandas as pd
-from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+import joblib  # noqa: E402
+import mlflow  # noqa: E402
+import mlflow.sklearn  # noqa: E402
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException  # noqa: E402
+from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
+from fastapi.responses import JSONResponse  # noqa: E402
 
-from api.schemas import (
+from api.schemas import (  # noqa: E402
     BatchPredictionRequest,
     BatchPredictionResponse,
     DiabetesInput,
     DiabetesPrediction,
     HealthCheck,
 )
-from data.preprocess import DiabetesPreprocessor
+from data.preprocess import DiabetesPreprocessor  # noqa: E402
 
 # Configure logging
 logging.basicConfig(
@@ -254,7 +254,7 @@ async def predict_batch(
         for i, patient in enumerate(request.patients):
             errors = validate_medical_inputs(patient)
             if errors:
-                validation_errors.append(f"Patient {i+1}: {errors}")
+                validation_errors.append(f"Patient {i + 1}: {errors}")
 
         if validation_errors:
             raise HTTPException(status_code=422, detail=validation_errors)

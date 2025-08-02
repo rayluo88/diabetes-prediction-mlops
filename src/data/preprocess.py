@@ -52,7 +52,7 @@ class DiabetesPreprocessor:
         for feature, count in missing_counts.items():
             if count > 0:
                 logger.info(
-                    f"Missing values in {feature}: {count} ({count/len(df_clean)*100:.1f}%)"
+                    f"Missing values in {feature}: {count} ({count / len(df_clean) * 100:.1f}%)"
                 )
 
         return df_clean

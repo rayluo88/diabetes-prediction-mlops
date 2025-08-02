@@ -12,14 +12,14 @@ from unittest.mock import MagicMock, Mock, patch
 # Add src to Python path (must be before local imports)
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import mlflow
-import numpy as np
-import pandas as pd
-import pytest
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, f1_score
+import mlflow  # noqa: E402
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+import pytest  # noqa: E402
+from sklearn.ensemble import RandomForestClassifier  # noqa: E402
+from sklearn.metrics import accuracy_score, f1_score  # noqa: E402
 
-from models.train_diabetes_model import DiabetesModelTrainer
+from models.train_diabetes_model import DiabetesModelTrainer  # noqa: E402
 
 
 class TestDiabetesModelTrainer:

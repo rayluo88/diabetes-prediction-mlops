@@ -12,13 +12,13 @@ from unittest.mock import MagicMock, patch
 # Add src to Python path (must be before local imports)
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
-import pandas as pd
-import pytest
-from fastapi.testclient import TestClient
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+import pytest  # noqa: E402
+from fastapi.testclient import TestClient  # noqa: E402
 
-from api.diabetes_api import app
-from api.schemas import DiabetesInput, DiabetesPrediction
+from api.diabetes_api import app  # noqa: E402
+from api.schemas import DiabetesInput, DiabetesPrediction  # noqa: E402
 
 
 class TestDiabetesAPI:

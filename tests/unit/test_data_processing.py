@@ -12,16 +12,16 @@ from unittest.mock import MagicMock, patch
 # Add src to Python path (must be before local imports)
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
-import pandas as pd
-import pytest
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+import pytest  # noqa: E402
 
-from data.load_diabetes_data import (
+from data.load_diabetes_data import (  # noqa: E402
     create_synthetic_diabetes_dataset,
     generate_data_report,
     save_dataset_splits,
 )
-from data.preprocess import DiabetesPreprocessor
+from data.preprocess import DiabetesPreprocessor  # noqa: E402
 
 
 class TestDiabetesDataLoading:
