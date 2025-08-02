@@ -20,7 +20,10 @@ from prefect.deployments import Deployment  # noqa: E402
 from prefect.schedules import IntervalSchedule  # noqa: E402
 from prefect.task_runners import SequentialTaskRunner  # noqa: E402
 
-from monitoring.diabetes_monitor import DiabetesModelMonitor, load_model_and_predict  # noqa: E402
+from monitoring.diabetes_monitor import (  # noqa: E402
+    DiabetesModelMonitor,
+    load_model_and_predict,
+)
 from workflows.training_pipeline import diabetes_training_flow  # noqa: E402
 
 
