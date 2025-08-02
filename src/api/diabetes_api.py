@@ -12,6 +12,9 @@ from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import Dict, List, Optional
 
+# Add src to Python path (must be before local imports)
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 import joblib
 import mlflow
 import mlflow.sklearn
@@ -20,9 +23,6 @@ import pandas as pd
 from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-
-# Add src to Python path
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from api.schemas import (
     BatchPredictionRequest,
@@ -171,7 +171,7 @@ async def predict_diabetes(
     Returns prediction with probability scores and risk assessment.
     """
     try:
-        logger.info(f"Processing diabetes prediction request")
+        logger.info("Processing diabetes prediction request")
 
         # Convert input to DataFrame
         input_df = pd.DataFrame([patient_data.dict()])

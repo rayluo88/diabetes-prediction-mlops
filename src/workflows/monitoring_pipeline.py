@@ -10,15 +10,15 @@ import sys
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 
+# Add src to Python path (must be before local imports)
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 import numpy as np
 import pandas as pd
 from prefect import flow, get_run_logger, task
 from prefect.deployments import Deployment
 from prefect.schedules import IntervalSchedule
 from prefect.task_runners import SequentialTaskRunner
-
-# Add src to Python path
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from monitoring.diabetes_monitor import DiabetesModelMonitor, load_model_and_predict
 from workflows.training_pipeline import diabetes_training_flow
@@ -341,6 +341,8 @@ def diabetes_monitoring_flow(
         "retraining_triggered": retraining_results.get("retraining_triggered", False),
         "alerts_count": len(monitoring_results.get("alerts", [])),
         "dashboard_updated": True,
+        "alert_summary": alert_summary,
+        "dashboard_data": dashboard_data,
     }
 
 

@@ -9,14 +9,14 @@ import os
 import sys
 from datetime import datetime, timedelta
 
+# Add src to Python path (must be before local imports)
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 import pandas as pd
 from prefect import flow, get_run_logger, task
 from prefect.deployments import Deployment
 from prefect.schedules import CronSchedule
 from prefect.task_runners import SequentialTaskRunner
-
-# Add src to Python path
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from data.load_diabetes_data import main as load_data
 from data.preprocess import preprocess_diabetes_data
@@ -49,7 +49,7 @@ def preprocess_data_task(file_paths):
             file_paths["train"], file_paths["test"]
         )
 
-        logger.info(f"Data preprocessing completed")
+        logger.info("Data preprocessing completed")
         logger.info(f"Training samples: {len(train_processed)}")
         logger.info(f"Test samples: {len(test_processed)}")
 

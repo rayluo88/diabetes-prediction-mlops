@@ -317,7 +317,7 @@ class DiabetesModelTrainer:
         for metric_name, value in optimized_metrics.items():
             logger.info(f"  {metric_name}: {value:.4f}")
 
-        logger.info(f"\nMODEL ARTIFACTS LOCATION: models/trained/")
+        logger.info("\nMODEL ARTIFACTS LOCATION: models/trained/")
         logger.info(f"MLFLOW EXPERIMENT: {self.experiment_name}")
 
 
@@ -330,8 +330,8 @@ def main():
         print("\n✅ Diabetes model training completed successfully!")
         print(f"🎯 Best F1-Score: {metrics['f1_score']:.4f}")
         print(f"📊 ROC-AUC: {metrics['roc_auc']:.4f}")
-        print(f"📁 Model saved in: models/trained/")
-        print(f"🔬 MLflow UI: mlflow ui")
+        print("📁 Model saved in: models/trained/")
+        print("🔬 MLflow UI: mlflow ui")
 
     except Exception as e:
         logger.error(f"Training failed: {e}")

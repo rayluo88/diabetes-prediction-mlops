@@ -9,15 +9,15 @@ import sys
 import tempfile
 from unittest.mock import MagicMock, Mock, patch
 
+# Add src to Python path (must be before local imports)
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "src"))
+
 import mlflow
 import numpy as np
 import pandas as pd
 import pytest
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, f1_score
-
-# Add src to Python path
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from models.train_diabetes_model import DiabetesModelTrainer
 
@@ -394,7 +394,9 @@ class TestMLflowIntegration:
     def test_mlflow_setup(self, mock_set_uri, mock_set_experiment):
         """Test MLflow setup."""
         trainer = DiabetesModelTrainer(experiment_name="test_mlflow")
-
+        # trainer object created and MLflow should be configured
+        assert trainer.experiment_name == "test_mlflow"
+        
         mock_set_experiment.assert_called_with("test_mlflow")
         mock_set_uri.assert_called()
 

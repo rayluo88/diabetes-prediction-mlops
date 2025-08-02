@@ -521,6 +521,7 @@ Please check the monitoring dashboard for detailed analysis.
 """
 
             logger.info(f"Alert would be sent to {self.alert_email}: {subject}")
+            logger.debug(f"Alert body: {body}")
             # Note: Actual email sending would require SMTP configuration
 
         except Exception as e:

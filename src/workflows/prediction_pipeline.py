@@ -10,6 +10,9 @@ import sys
 from datetime import datetime, timedelta
 from typing import Dict, List
 
+# Add src to Python path (must be before local imports)
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 import joblib
 import mlflow
 import mlflow.sklearn
@@ -19,9 +22,6 @@ from prefect import flow, get_run_logger, task
 from prefect.deployments import Deployment
 from prefect.schedules import IntervalSchedule
 from prefect.task_runners import SequentialTaskRunner
-
-# Add src to Python path
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from data.preprocess import DiabetesPreprocessor
 
@@ -228,7 +228,7 @@ def save_predictions_task(prediction_results: Dict, output_path: str = None) -> 
 def diabetes_prediction_flow(input_data_path: str, output_path: str = None):
     """Main diabetes batch prediction workflow."""
     logger = get_run_logger()
-    logger.info(f"🔮 Starting Diabetes Batch Prediction Pipeline")
+    logger.info("🔮 Starting Diabetes Batch Prediction Pipeline")
     logger.info(f"📁 Input data: {input_data_path}")
 
     # Task 1: Load champion model

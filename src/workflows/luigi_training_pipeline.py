@@ -10,11 +10,11 @@ import os
 import sys
 from datetime import datetime, timedelta
 
+# Add src to Python path (must be before local imports)
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 import luigi
 import pandas as pd
-
-# Add src to Python path
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from data.load_diabetes_data import main as load_data
 from data.preprocess import preprocess_diabetes_data
@@ -241,7 +241,7 @@ class GenerateReportTask(luigi.Task):
             <p><strong>Pipeline:</strong> Luigi-based MLOps Pipeline</p>
             <p><strong>Dataset:</strong> UCI Diabetes Dataset</p>
             <p><strong>Target:</strong> Singapore Healthcare Application</p>
-            
+
             <h2>✅ Tasks Completed</h2>
             <ul>
                 <li>✅ Data Loading</li>
@@ -250,10 +250,10 @@ class GenerateReportTask(luigi.Task):
                 <li>✅ Model Validation</li>
                 <li>✅ Report Generation</li>
             </ul>
-            
+
             <h2>🎯 Healthcare Compliance</h2>
             <p>All models meet Singapore healthcare standards for diabetes prediction.</p>
-            
+
             <h2>🔗 Next Steps</h2>
             <ul>
                 <li>Deploy to FastAPI service</li>

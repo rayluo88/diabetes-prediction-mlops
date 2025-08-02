@@ -11,12 +11,12 @@ import sys
 import tempfile
 from unittest.mock import MagicMock, patch
 
+# Add src to Python path (must be before local imports)
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "src"))
+
 import numpy as np
 import pandas as pd
 import pytest
-
-# Add src to Python path
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from data.load_diabetes_data import main as load_data_main
 from data.preprocess import DiabetesPreprocessor, preprocess_diabetes_data
@@ -188,8 +188,8 @@ class TestEndToEndPipeline:
         X_train = train_processed.drop("target", axis=1)
         y_train = train_processed["target"]
         X_test = test_processed.drop("target", axis=1)
-        y_test = test_processed["target"]
-
+        # y_test unused in this test - would be used for evaluation
+        
         model = RandomForestClassifier(n_estimators=10, random_state=42)
         model.fit(X_train, y_train)
 
@@ -236,9 +236,9 @@ class TestPipelineDataFlow:
                 file_paths["train"], file_paths["test"]
             )
 
-            # Verify data consistency
-            train_original = pd.read_csv(file_paths["train"])
-            test_original = pd.read_csv(file_paths["test"])
+            # Verify data consistency (original files would be used for validation)
+            # train_original = pd.read_csv(file_paths["train"])
+            # test_original = pd.read_csv(file_paths["test"])
 
             # Check that target distribution is preserved
             original_target_dist = original_data["target"].value_counts(normalize=True)

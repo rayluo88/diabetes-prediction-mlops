@@ -9,12 +9,12 @@ import sys
 import tempfile
 from unittest.mock import MagicMock, patch
 
+# Add src to Python path (must be before local imports)
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "src"))
+
 import numpy as np
 import pandas as pd
 import pytest
-
-# Add src to Python path
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from data.load_diabetes_data import (
     create_synthetic_diabetes_dataset,

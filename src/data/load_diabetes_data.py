@@ -173,7 +173,7 @@ def main():
     file_paths = save_dataset_splits(df)
 
     logger.info("\n✅ Diabetes dataset pipeline completed successfully!")
-    logger.info(f"📁 Files created:")
+    logger.info("📁 Files created:")
     for key, path in file_paths.items():
         logger.info(f"  {key}: {path}")
 

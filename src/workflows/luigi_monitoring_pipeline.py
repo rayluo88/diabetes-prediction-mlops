@@ -10,12 +10,12 @@ import os
 import sys
 from datetime import datetime, timedelta
 
+# Add src to Python path (must be before local imports)
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 import luigi
 import numpy as np
 import pandas as pd
-
-# Add src to Python path
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from monitoring.diabetes_monitor import DiabetesModelMonitor
 
@@ -267,7 +267,7 @@ MLflow: http://localhost:5000
                 alert_log.append(
                     f"[{datetime.now()}] ALERT SENT - Priority: {priority}"
                 )
-                alert_log.append(f"Recipients: Healthcare team, Data science team")
+                alert_log.append("Recipients: Healthcare team, Data science team")
                 alert_log.append(f"Message: {alert_message}")
 
                 # In production, send actual alerts (email, Slack, etc.)
