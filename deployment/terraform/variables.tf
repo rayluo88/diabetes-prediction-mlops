@@ -1,6 +1,4 @@
-"""
-Terraform Variables for Diabetes Prediction MLOps Infrastructure
-"""
+# Terraform Variables for Diabetes Prediction MLOps Infrastructure
 
 variable "aws_region" {
   description = "AWS region for resources"

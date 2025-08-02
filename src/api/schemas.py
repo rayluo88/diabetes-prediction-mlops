@@ -8,7 +8,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class RiskCategory(str, Enum):
@@ -72,31 +72,33 @@ class DiabetesInput(BaseModel):
 
     age: float = Field(..., ge=18, le=120, description="Age in years", examples=[35.0])
 
-    @validator("glucose")
+    @field_validator("glucose")
+    @classmethod
     def validate_glucose(cls, v: float) -> float:
         """Validate glucose levels."""
         if v < 50:
             raise ValueError("Glucose level too low for valid measurement")
         return v
 
-    @validator("blood_pressure")
+    @field_validator("blood_pressure")
+    @classmethod
     def validate_blood_pressure(cls, v: float) -> float:
         """Validate blood pressure."""
         if v < 40:
             raise ValueError("Blood pressure too low for valid measurement")
         return v
 
-    @validator("bmi")
+    @field_validator("bmi")
+    @classmethod
     def validate_bmi(cls, v: float) -> float:
         """Validate BMI."""
         if v < 10 or v > 80:
             raise ValueError("BMI outside normal human range")
         return v
 
-    class Config:
-        """Pydantic configuration."""
-
-        schema_extra = {
+    model_config = ConfigDict(
+        protected_namespaces=(),
+        json_schema_extra={
             "example": {
                 "patient_id": "PAT_001",
                 "pregnancies": 1.0,
@@ -108,7 +110,8 @@ class DiabetesInput(BaseModel):
                 "diabetes_pedigree_function": 0.5,
                 "age": 35.0,
             }
-        }
+        },
+    )
 
 
 class DiabetesPrediction(BaseModel):
@@ -142,10 +145,9 @@ class DiabetesPrediction(BaseModel):
         ..., description="When the prediction was made"
     )
 
-    class Config:
-        """Pydantic configuration."""
-
-        schema_extra = {
+    model_config = ConfigDict(
+        protected_namespaces=(),
+        json_schema_extra={
             "example": {
                 "patient_id": "PAT_001",
                 "diabetes_prediction": False,
@@ -156,7 +158,8 @@ class DiabetesPrediction(BaseModel):
                 "model_version": "1.0",
                 "prediction_timestamp": "2024-01-15T10:30:00",
             }
-        }
+        },
+    )
 
 
 class BatchPredictionRequest(BaseModel):
@@ -177,10 +180,9 @@ class BatchPredictionRequest(BaseModel):
         default={}, description="Additional metadata for the batch"
     )
 
-    class Config:
-        """Pydantic configuration."""
-
-        schema_extra = {
+    model_config = ConfigDict(
+        protected_namespaces=(),
+        json_schema_extra={
             "example": {
                 "batch_id": "BATCH_2024_001",
                 "patients": [
@@ -198,7 +200,8 @@ class BatchPredictionRequest(BaseModel):
                 ],
                 "metadata": {"clinic_id": "SGH_001", "date": "2024-01-15"},
             }
-        }
+        },
+    )
 
 
 class BatchPredictionResponse(BaseModel):
@@ -216,10 +219,9 @@ class BatchPredictionResponse(BaseModel):
         ..., description="When the batch was processed"
     )
 
-    class Config:
-        """Pydantic configuration."""
-
-        schema_extra = {
+    model_config = ConfigDict(
+        protected_namespaces=(),
+        json_schema_extra={
             "example": {
                 "batch_id": "BATCH_2024_001",
                 "predictions": [
@@ -242,7 +244,8 @@ class BatchPredictionResponse(BaseModel):
                 },
                 "processing_timestamp": "2024-01-15T10:30:00",
             }
-        }
+        },
+    )
 
 
 class HealthCheck(BaseModel):
@@ -260,10 +263,9 @@ class HealthCheck(BaseModel):
 
     load_time: Optional[datetime] = Field(None, description="When model was loaded")
 
-    class Config:
-        """Pydantic configuration."""
-
-        schema_extra = {
+    model_config = ConfigDict(
+        protected_namespaces=(),
+        json_schema_extra={
             "example": {
                 "status": "healthy",
                 "timestamp": "2024-01-15T10:30:00",
@@ -272,7 +274,8 @@ class HealthCheck(BaseModel):
                 "preprocessor_loaded": True,
                 "load_time": "2024-01-15T08:00:00",
             }
-        }
+        },
+    )
 
 
 class ErrorResponse(BaseModel):
@@ -286,13 +289,13 @@ class ErrorResponse(BaseModel):
         default_factory=datetime.now, description="Error timestamp"
     )
 
-    class Config:
-        """Pydantic configuration."""
-
-        schema_extra = {
+    model_config = ConfigDict(
+        protected_namespaces=(),
+        json_schema_extra={
             "example": {
                 "detail": "Validation error in input data",
                 "error_code": "VALIDATION_ERROR",
                 "timestamp": "2024-01-15T10:30:00",
             }
-        }
+        },
+    )

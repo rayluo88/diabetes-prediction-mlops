@@ -1,6 +1,4 @@
-"""
-Terraform Outputs for Diabetes Prediction MLOps Infrastructure
-"""
+# Terraform Outputs for Diabetes Prediction MLOps Infrastructure
 
 output "vpc_id" {
   description = "ID of the VPC"

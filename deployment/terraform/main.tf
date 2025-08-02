@@ -1,7 +1,5 @@
-"""
-Terraform Infrastructure for Diabetes Prediction MLOps Pipeline
-AWS deployment with ECS, RDS, S3, and complete monitoring setup
-"""
+# Terraform Infrastructure for Diabetes Prediction MLOps Pipeline
+# AWS deployment with ECS, RDS, S3, and complete monitoring setup
 
 terraform {
   required_version = ">= 1.0"
