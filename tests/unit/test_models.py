@@ -396,7 +396,7 @@ class TestMLflowIntegration:
         trainer = DiabetesModelTrainer(experiment_name="test_mlflow")
         # trainer object created and MLflow should be configured
         assert trainer.experiment_name == "test_mlflow"
-        
+
         mock_set_experiment.assert_called_with("test_mlflow")
         mock_set_uri.assert_called()
 

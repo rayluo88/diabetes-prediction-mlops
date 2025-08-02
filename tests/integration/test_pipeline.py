@@ -189,7 +189,7 @@ class TestEndToEndPipeline:
         y_train = train_processed["target"]
         X_test = test_processed.drop("target", axis=1)
         # y_test unused in this test - would be used for evaluation
-        
+
         model = RandomForestClassifier(n_estimators=10, random_state=42)
         model.fit(X_train, y_train)
 
