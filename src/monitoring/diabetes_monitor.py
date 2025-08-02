@@ -11,8 +11,8 @@ import os
 import smtplib
 import warnings
 from datetime import datetime, timedelta
-from email.mime.multipart import MimeMultipart
-from email.mime.text import MimeText
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from typing import Dict, List, Optional, Tuple
 
 import joblib
@@ -60,7 +60,7 @@ class DiabetesModelMonitor:
     def __init__(
         self,
         reference_data_path: str = "data/processed/diabetes_train_processed.csv",
-        alert_email: str = None,
+        alert_email: Optional[str] = None,
         alert_threshold: float = 0.3,
     ):
         """

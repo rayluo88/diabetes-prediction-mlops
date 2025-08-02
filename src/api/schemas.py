@@ -23,11 +23,11 @@ class DiabetesInput(BaseModel):
     """Input schema for diabetes prediction."""
 
     patient_id: str = Field(
-        ..., description="Unique patient identifier", example="PAT_001"
+        ..., description="Unique patient identifier", examples=["PAT_001"]
     )
 
     pregnancies: float = Field(
-        ..., ge=0, le=20, description="Number of pregnancies", example=1.0
+        ..., ge=0, le=20, description="Number of pregnancies", examples=[1.0]
     )
 
     glucose: float = Field(
@@ -35,47 +35,59 @@ class DiabetesInput(BaseModel):
         ge=0,
         le=300,
         description="Plasma glucose concentration (mg/dL)",
-        example=120.0,
+        examples=[120.0],
     )
 
     blood_pressure: float = Field(
-        ..., ge=0, le=200, description="Diastolic blood pressure (mm Hg)", example=80.0
+        ...,
+        ge=0,
+        le=200,
+        description="Diastolic blood pressure (mm Hg)",
+        examples=[80.0],
     )
 
     skin_thickness: float = Field(
-        ..., ge=0, le=100, description="Triceps skin fold thickness (mm)", example=20.0
+        ...,
+        ge=0,
+        le=100,
+        description="Triceps skin fold thickness (mm)",
+        examples=[20.0],
     )
 
     insulin: float = Field(
-        ..., ge=0, le=1000, description="2-Hour serum insulin (mu U/ml)", example=85.0
+        ...,
+        ge=0,
+        le=1000,
+        description="2-Hour serum insulin (mu U/ml)",
+        examples=[85.0],
     )
 
     bmi: float = Field(
-        ..., ge=10, le=80, description="Body mass index (kg/m²)", example=25.5
+        ..., ge=10, le=80, description="Body mass index (kg/m²)", examples=[25.5]
     )
 
     diabetes_pedigree_function: float = Field(
-        ..., ge=0, le=5, description="Diabetes pedigree function", example=0.5
+        ..., ge=0, le=5, description="Diabetes pedigree function", examples=[0.5]
     )
 
-    age: float = Field(..., ge=18, le=120, description="Age in years", example=35.0)
+    age: float = Field(..., ge=18, le=120, description="Age in years", examples=[35.0])
 
     @validator("glucose")
-    def validate_glucose(cls, v):
+    def validate_glucose(cls, v: float) -> float:
         """Validate glucose levels."""
         if v < 50:
             raise ValueError("Glucose level too low for valid measurement")
         return v
 
     @validator("blood_pressure")
-    def validate_blood_pressure(cls, v):
+    def validate_blood_pressure(cls, v: float) -> float:
         """Validate blood pressure."""
         if v < 40:
             raise ValueError("Blood pressure too low for valid measurement")
         return v
 
     @validator("bmi")
-    def validate_bmi(cls, v):
+    def validate_bmi(cls, v: float) -> float:
         """Validate BMI."""
         if v < 10 or v > 80:
             raise ValueError("BMI outside normal human range")
@@ -151,14 +163,14 @@ class BatchPredictionRequest(BaseModel):
     """Schema for batch prediction requests."""
 
     batch_id: str = Field(
-        ..., description="Unique batch identifier", example="BATCH_2024_001"
+        ..., description="Unique batch identifier", examples=["BATCH_2024_001"]
     )
 
     patients: List[DiabetesInput] = Field(
         ...,
         description="List of patient data for prediction",
-        min_items=1,
-        max_items=1000,  # Limit batch size
+        min_length=1,
+        max_length=1000,  # Limit batch size
     )
 
     metadata: Optional[Dict] = Field(
@@ -236,7 +248,7 @@ class BatchPredictionResponse(BaseModel):
 class HealthCheck(BaseModel):
     """Health check response schema."""
 
-    status: str = Field(..., description="Service status", example="healthy")
+    status: str = Field(..., description="Service status", examples=["healthy"])
 
     timestamp: datetime = Field(..., description="Health check timestamp")
 
