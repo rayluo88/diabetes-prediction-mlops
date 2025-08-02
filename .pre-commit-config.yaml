@@ -1,0 +1,130 @@
+# Pre-commit hooks for Diabetes Prediction MLOps Project
+# Ensures code quality, security, and consistency
+
+repos:
+  # Black - Python code formatter
+  - repo: https://github.com/psf/black
+    rev: 23.12.1
+    hooks:
+      - id: black
+        language_version: python3.11
+        args: [--line-length=88]
+        exclude: ^(deployment/terraform/|\.terraform/)
+
+  # isort - Import sorting
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: [--profile=black, --line-length=88]
+        exclude: ^(deployment/terraform/|\.terraform/)
+
+  # Flake8 - Python linting
+  - repo: https://github.com/PyCQA/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        additional_dependencies: [flake8-docstrings]
+        exclude: ^(deployment/terraform/|\.terraform/)
+
+  # Pre-commit hooks for general file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^(deployment/terraform/|\.terraform/)
+      - id: end-of-file-fixer
+        exclude: ^(deployment/terraform/|\.terraform/)
+      - id: check-yaml
+        exclude: ^(deployment/terraform/|\.terraform/)
+      - id: check-json
+        exclude: ^(deployment/terraform/|\.terraform/)
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: debug-statements
+      - id: check-docstring-first
+
+  # Security scanning with bandit
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.5
+    hooks:
+      - id: bandit
+        args: ["-r", "src/", "-f", "json", "-o", "bandit-report.json"]
+        exclude: ^(tests/|deployment/terraform/|\.terraform/)
+
+  # Safety - check for known security vulnerabilities
+  - repo: https://github.com/Lucas-C/pre-commit-hooks-safety
+    rev: v1.3.2
+    hooks:
+      - id: python-safety-dependencies-check
+        exclude: ^(deployment/terraform/|\.terraform/)
+
+  # Terraform formatting and validation
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.86.0
+    hooks:
+      - id: terraform_fmt
+        files: \.tf$
+        exclude: ^(\.terraform/)
+      - id: terraform_validate
+        files: \.tf$
+        exclude: ^(\.terraform/)
+      - id: terraform_tflint
+        files: \.tf$
+        exclude: ^(\.terraform/)
+
+  # Docker linting
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.12.0
+    hooks:
+      - id: hadolint-docker
+        files: Dockerfile.*
+
+  # Secrets detection
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: ^(deployment/terraform/|\.terraform/|tests/|\.git/)
+
+  # Python type checking with mypy
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-requests, types-PyYAML]
+        exclude: ^(tests/|deployment/terraform/|\.terraform/)
+
+  # Notebook cleaning (remove outputs)
+  - repo: https://github.com/nbQA-dev/nbQA
+    rev: 1.7.1
+    hooks:
+      - id: nbqa-black
+        files: \.ipynb$
+      - id: nbqa-isort
+        files: \.ipynb$
+
+  # YAML linting
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.33.0
+    hooks:
+      - id: yamllint
+        args: [-c=.yamllint.yml]
+        exclude: ^(deployment/terraform/|\.terraform/)
+
+  # Markdown linting
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.38.0
+    hooks:
+      - id: markdownlint
+        args: [--fix]
+        exclude: ^(deployment/terraform/|\.terraform/)
+
+# Configuration for specific hooks
+default_stages: [commit, push]
+
+# Global exclusions
+exclude: ^(\.terraform/|deployment/terraform/\.terraform/)

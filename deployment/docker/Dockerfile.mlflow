@@ -1,0 +1,46 @@
+# MLflow Server Docker Image
+# Configured for production deployment with PostgreSQL backend
+
+FROM python:3.11-slim
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+RUN pip install --upgrade pip && \
+    pip install mlflow[extras]==2.8.0 \
+                psycopg2-binary \
+                boto3 \
+                pymysql
+
+# Create mlflow user
+RUN groupadd -r mlflow && useradd -r -g mlflow mlflow
+
+# Create working directory
+WORKDIR /mlflow
+RUN chown mlflow:mlflow /mlflow
+
+# Switch to mlflow user
+USER mlflow
+
+# Expose MLflow port
+EXPOSE 5000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:5000/health || exit 1
+
+# Start MLflow server
+CMD mlflow server \
+    --backend-store-uri ${BACKEND_STORE_URI} \
+    --default-artifact-root ${DEFAULT_ARTIFACT_ROOT} \
+    --host 0.0.0.0 \
+    --port 5000
