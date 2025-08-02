@@ -8,7 +8,7 @@ retraining and alerting based on model performance and drift.
 from prefect import flow, task, get_run_logger
 from prefect.task_runners import SequentialTaskRunner
 from prefect.deployments import Deployment
-from prefect.server.schemas.schedules import IntervalSchedule
+from prefect.schedules import IntervalSchedule
 import pandas as pd
 import numpy as np
 import os

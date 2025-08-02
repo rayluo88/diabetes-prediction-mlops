@@ -8,7 +8,7 @@ with proper error handling, logging, and scheduling capabilities.
 from prefect import flow, task, get_run_logger
 from prefect.task_runners import SequentialTaskRunner
 from prefect.deployments import Deployment
-from prefect.server.schemas.schedules import CronSchedule
+from prefect.schedules import CronSchedule
 import pandas as pd
 import sys
 import os
