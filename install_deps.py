@@ -54,10 +54,11 @@ def main():
     # Step 4: Install development dependencies (optional)
     if len(sys.argv) > 1 and sys.argv[1] == "--dev":
         print("\n📦 Installing development dependencies...")
-        dev_result = run_command("pip install -r requirements-dev.txt", "Installing development requirements")
+        dev_result = run_command("pip install -r requirements-dev.txt --no-cache-dir", "Installing development requirements")
         
         if dev_result is None:
             print("⚠️  Development dependencies failed, but production deps are OK")
+            print("💡 Note: markdownlint is installed via pre-commit hooks, not pip")
     
     # Step 5: Final conflict check
     print("\n🔍 Final dependency check...")
