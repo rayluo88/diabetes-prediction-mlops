@@ -124,7 +124,7 @@ uvicorn src.api.diabetes_api:app --reload
 
 ### Core MLOps Tools
 - **🔬 Experiment Tracking**: MLflow (tracking + model registry)
-- **🔄 Workflow Orchestration**: Prefect (fully deployed)
+- **🔄 Workflow Orchestration**: Luigi (lightweight, battle-tested)
 - **📊 Model Monitoring**: Evidently (drift detection + alerts)
 - **🚀 API Framework**: FastAPI (containerized deployment)
 - **☁️ Cloud Platform**: AWS (ECS, RDS, S3)
@@ -245,12 +245,12 @@ terraform apply
 
 ### 4. Monitoring & Alerts
 ```bash
-# Run monitoring pipeline
-python src/monitoring/diabetes_monitor.py
+# Run Luigi monitoring pipeline
+make run-luigi-monitoring
 
-# Start Prefect server
-prefect server start
-# Access at http://localhost:4200
+# Start Luigi web server
+make run-luigi-server
+# Access at http://localhost:8082
 ```
 
 ## 🧪 Testing

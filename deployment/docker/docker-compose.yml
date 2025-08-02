@@ -73,18 +73,20 @@ services:
     networks:
       - diabetes-network
 
-  # Prefect Server
-  prefect:
-    image: prefecthq/prefect:2.14-python3.11
-    container_name: diabetes-prefect
-    environment:
-      PREFECT_API_URL: http://localhost:4200/api
-      PREFECT_SERVER_API_HOST: 0.0.0.0
+  # Luigi Central Scheduler
+  luigi:
+    build:
+      context: ../..
+      dockerfile: deployment/docker/Dockerfile.luigi
+    container_name: diabetes-luigi
     ports:
-      - "4200:4200"
-    command: prefect server start --host 0.0.0.0
+      - "8082:8082"
+    command: luigid --port 8082 --pidfile /var/run/luigi.pid --logdir /var/log/luigi --state-path /var/lib/luigi/luigi-state.pickle
+    volumes:
+      - luigi_data:/var/lib/luigi
+      - luigi_logs:/var/log/luigi
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4200/api/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8082/"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -194,6 +196,8 @@ volumes:
   minio_data:
   grafana_data:
   prometheus_data:
+  luigi_data:
+  luigi_logs:
 
 networks:
   diabetes-network:
