@@ -136,8 +136,13 @@ class TestDiabetesAPI:
         assert data["risk_category"] in ["Low Risk", "Medium Risk", "High Risk"]
         assert data["patient_id"] == sample_patient_data["patient_id"]
 
-    def test_predict_endpoint_validation_error(self, client):
+    @patch("api.diabetes_api.model")
+    @patch("api.diabetes_api.preprocessor")
+    def test_predict_endpoint_validation_error(self, mock_preprocessor, mock_model, client):
         """Test prediction endpoint with validation errors."""
+        # Mock dependencies to avoid 503 errors
+        mock_model.return_value = MagicMock()
+        mock_preprocessor.return_value = MagicMock()
         invalid_data = {
             "patient_id": "TEST_001",
             "pregnancies": -1.0,  # Invalid: negative
@@ -153,8 +158,13 @@ class TestDiabetesAPI:
         response = client.post("/predict", json=invalid_data)
         assert response.status_code == 422
 
-    def test_predict_endpoint_missing_fields(self, client):
+    @patch("api.diabetes_api.model")
+    @patch("api.diabetes_api.preprocessor")
+    def test_predict_endpoint_missing_fields(self, mock_preprocessor, mock_model, client):
         """Test prediction endpoint with missing required fields."""
+        # Mock dependencies to avoid 503 errors
+        mock_model.return_value = MagicMock()
+        mock_preprocessor.return_value = MagicMock()
         incomplete_data = {
             "patient_id": "TEST_001",
             "pregnancies": 2.0,
@@ -207,8 +217,14 @@ class TestDiabetesAPI:
             assert "diabetes_probability" in prediction
             assert "risk_category" in prediction
 
-    def test_batch_predict_endpoint_validation_error(self, client):
+    @patch("api.diabetes_api.model")
+    @patch("api.diabetes_api.preprocessor")
+    def test_batch_predict_endpoint_validation_error(self, mock_preprocessor, mock_model, client):
         """Test batch prediction with validation errors."""
+        # Mock dependencies to avoid 503 errors
+        mock_model.return_value = MagicMock()
+        mock_preprocessor.return_value = MagicMock()
+        
         invalid_batch_data = {
             "batch_id": "BATCH_TEST_001",
             "patients": [
@@ -262,9 +278,22 @@ class TestDiabetesAPI:
             assert data["features"] == expected_features
 
     @patch("api.diabetes_api.model", None)
-    def test_prediction_without_model_loaded(self, client, sample_patient_data):
+    def test_prediction_without_model_loaded(self, client):
         """Test prediction when model is not loaded."""
-        response = client.post("/predict", json=sample_patient_data)
+        # Create sample data inline
+        sample_data = {
+            "patient_id": "TEST_001",
+            "pregnancies": 2.0,
+            "glucose": 120.0,
+            "blood_pressure": 80.0,
+            "skin_thickness": 25.0,
+            "insulin": 100.0,
+            "bmi": 28.5,
+            "diabetes_pedigree_function": 0.5,
+            "age": 35.0,
+        }
+        
+        response = client.post("/predict", json=sample_data)
         assert response.status_code == 503
 
 
@@ -367,27 +396,55 @@ class TestAPIErrorHandling:
 
     @patch("api.diabetes_api.model")
     @patch("api.diabetes_api.preprocessor")
+    @patch("api.diabetes_api.model_version", "test_v1")
     def test_prediction_internal_error(
-        self, mock_preprocessor, mock_model, client, sample_patient_data
+        self, mock_preprocessor, mock_model, client
     ):
         """Test handling of internal server errors during prediction."""
+        # Create sample data inline
+        sample_data = {
+            "patient_id": "TEST_001",
+            "pregnancies": 2.0,
+            "glucose": 120.0,
+            "blood_pressure": 80.0,
+            "skin_thickness": 25.0,
+            "insulin": 100.0,
+            "bmi": 28.5,
+            "diabetes_pedigree_function": 0.5,
+            "age": 35.0,
+        }
+        
         # Mock model to raise an exception
         mock_model.predict.side_effect = Exception("Model error")
         mock_preprocessor.transform.return_value = MagicMock()
 
-        response = client.post("/predict", json=sample_patient_data)
+        response = client.post("/predict", json=sample_data)
         assert response.status_code == 500
 
     @patch("api.diabetes_api.model")
     @patch("api.diabetes_api.preprocessor")
+    @patch("api.diabetes_api.model_version", "test_v1")
     def test_preprocessing_error(
-        self, mock_preprocessor, mock_model, client, sample_patient_data
+        self, mock_preprocessor, mock_model, client
     ):
         """Test handling of preprocessing errors."""
+        # Create sample data inline
+        sample_data = {
+            "patient_id": "TEST_001",
+            "pregnancies": 2.0,
+            "glucose": 120.0,
+            "blood_pressure": 80.0,
+            "skin_thickness": 25.0,
+            "insulin": 100.0,
+            "bmi": 28.5,
+            "diabetes_pedigree_function": 0.5,
+            "age": 35.0,
+        }
+        
         # Mock preprocessor to raise an exception
         mock_preprocessor.transform.side_effect = Exception("Preprocessing error")
 
-        response = client.post("/predict", json=sample_patient_data)
+        response = client.post("/predict", json=sample_data)
         assert response.status_code == 500
 
     def test_malformed_json(self, client):
@@ -410,11 +467,25 @@ class TestAPIPerformance:
 
     @patch("api.diabetes_api.model")
     @patch("api.diabetes_api.preprocessor")
+    @patch("api.diabetes_api.model_version", "test_v1")
     def test_prediction_response_time(
-        self, mock_preprocessor, mock_model, client, sample_patient_data
+        self, mock_preprocessor, mock_model, client
     ):
         """Test that predictions complete within reasonable time."""
         import time
+        
+        # Create sample data inline
+        sample_data = {
+            "patient_id": "TEST_001",
+            "pregnancies": 2.0,
+            "glucose": 120.0,
+            "blood_pressure": 80.0,
+            "skin_thickness": 25.0,
+            "insulin": 100.0,
+            "bmi": 28.5,
+            "diabetes_pedigree_function": 0.5,
+            "age": 35.0,
+        }
 
         # Mock fast prediction
         mock_model.predict.return_value = np.array([0])
@@ -422,7 +493,7 @@ class TestAPIPerformance:
         mock_preprocessor.transform.return_value = MagicMock()
 
         start_time = time.time()
-        response = client.post("/predict", json=sample_patient_data)
+        response = client.post("/predict", json=sample_data)
         end_time = time.time()
 
         assert response.status_code == 200
@@ -430,6 +501,7 @@ class TestAPIPerformance:
 
     @patch("api.diabetes_api.model")
     @patch("api.diabetes_api.preprocessor")
+    @patch("api.diabetes_api.model_version", "test_v1")
     def test_batch_prediction_scalability(self, mock_preprocessor, mock_model, client):
         """Test batch prediction with larger datasets."""
         # Create larger batch
