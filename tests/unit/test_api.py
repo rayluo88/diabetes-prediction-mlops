@@ -138,7 +138,9 @@ class TestDiabetesAPI:
 
     @patch("api.diabetes_api.model")
     @patch("api.diabetes_api.preprocessor")
-    def test_predict_endpoint_validation_error(self, mock_preprocessor, mock_model, client):
+    def test_predict_endpoint_validation_error(
+        self, mock_preprocessor, mock_model, client
+    ):
         """Test prediction endpoint with validation errors."""
         # Mock dependencies to avoid 503 errors
         mock_model.return_value = MagicMock()
@@ -160,7 +162,9 @@ class TestDiabetesAPI:
 
     @patch("api.diabetes_api.model")
     @patch("api.diabetes_api.preprocessor")
-    def test_predict_endpoint_missing_fields(self, mock_preprocessor, mock_model, client):
+    def test_predict_endpoint_missing_fields(
+        self, mock_preprocessor, mock_model, client
+    ):
         """Test prediction endpoint with missing required fields."""
         # Mock dependencies to avoid 503 errors
         mock_model.return_value = MagicMock()
@@ -219,12 +223,14 @@ class TestDiabetesAPI:
 
     @patch("api.diabetes_api.model")
     @patch("api.diabetes_api.preprocessor")
-    def test_batch_predict_endpoint_validation_error(self, mock_preprocessor, mock_model, client):
+    def test_batch_predict_endpoint_validation_error(
+        self, mock_preprocessor, mock_model, client
+    ):
         """Test batch prediction with validation errors."""
         # Mock dependencies to avoid 503 errors
         mock_model.return_value = MagicMock()
         mock_preprocessor.return_value = MagicMock()
-        
+
         invalid_batch_data = {
             "batch_id": "BATCH_TEST_001",
             "patients": [
@@ -292,7 +298,7 @@ class TestDiabetesAPI:
             "diabetes_pedigree_function": 0.5,
             "age": 35.0,
         }
-        
+
         response = client.post("/predict", json=sample_data)
         assert response.status_code == 503
 
@@ -397,9 +403,7 @@ class TestAPIErrorHandling:
     @patch("api.diabetes_api.model")
     @patch("api.diabetes_api.preprocessor")
     @patch("api.diabetes_api.model_version", "test_v1")
-    def test_prediction_internal_error(
-        self, mock_preprocessor, mock_model, client
-    ):
+    def test_prediction_internal_error(self, mock_preprocessor, mock_model, client):
         """Test handling of internal server errors during prediction."""
         # Create sample data inline
         sample_data = {
@@ -413,7 +417,7 @@ class TestAPIErrorHandling:
             "diabetes_pedigree_function": 0.5,
             "age": 35.0,
         }
-        
+
         # Mock model to raise an exception
         mock_model.predict.side_effect = Exception("Model error")
         mock_preprocessor.transform.return_value = MagicMock()
@@ -424,9 +428,7 @@ class TestAPIErrorHandling:
     @patch("api.diabetes_api.model")
     @patch("api.diabetes_api.preprocessor")
     @patch("api.diabetes_api.model_version", "test_v1")
-    def test_preprocessing_error(
-        self, mock_preprocessor, mock_model, client
-    ):
+    def test_preprocessing_error(self, mock_preprocessor, mock_model, client):
         """Test handling of preprocessing errors."""
         # Create sample data inline
         sample_data = {
@@ -440,7 +442,7 @@ class TestAPIErrorHandling:
             "diabetes_pedigree_function": 0.5,
             "age": 35.0,
         }
-        
+
         # Mock preprocessor to raise an exception
         mock_preprocessor.transform.side_effect = Exception("Preprocessing error")
 
@@ -468,12 +470,10 @@ class TestAPIPerformance:
     @patch("api.diabetes_api.model")
     @patch("api.diabetes_api.preprocessor")
     @patch("api.diabetes_api.model_version", "test_v1")
-    def test_prediction_response_time(
-        self, mock_preprocessor, mock_model, client
-    ):
+    def test_prediction_response_time(self, mock_preprocessor, mock_model, client):
         """Test that predictions complete within reasonable time."""
         import time
-        
+
         # Create sample data inline
         sample_data = {
             "patient_id": "TEST_001",
