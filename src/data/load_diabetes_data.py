@@ -42,6 +42,19 @@ def load_pima_diabetes_dataset():
         # Convert target to binary (0/1)
         df["target"] = (df["target"] == "tested_positive").astype(int)
 
+        # Normalize column names to standard format
+        column_mapping = {
+            "preg": "pregnancies",
+            "plas": "glucose",
+            "pres": "blood_pressure",
+            "skin": "skin_thickness",
+            "insu": "insulin",
+            "mass": "bmi",
+            "pedi": "diabetes_pedigree_function",
+        }
+
+        df = df.rename(columns=column_mapping)
+
         logger.info(f"Dataset loaded successfully: {df.shape}")
         logger.info(f"Features: {list(df.columns[:-1])}")
         logger.info(f"Target distribution: {df['target'].value_counts().to_dict()}")

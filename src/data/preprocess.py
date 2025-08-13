@@ -110,10 +110,19 @@ class DiabetesPreprocessor:
         # Convert categorical features to dummy variables
         categorical_features = ["bmi_category", "age_group", "glucose_category"]
         df_engineered = pd.get_dummies(
-            df_engineered, columns=categorical_features, prefix=categorical_features
+            df_engineered,
+            columns=categorical_features,
+            prefix=categorical_features,
+            drop_first=True,
         )
 
         logger.info(f"Features after engineering: {df_engineered.shape[1]}")
+
+        # Check for duplicate columns and remove them
+        if df_engineered.columns.duplicated().any():
+            logger.warning("Found duplicate columns, removing...")
+            df_engineered = df_engineered.loc[:, ~df_engineered.columns.duplicated()]
+            logger.info(f"Features after removing duplicates: {df_engineered.shape[1]}")
 
         return df_engineered
 
@@ -167,7 +176,7 @@ class DiabetesPreprocessor:
                 X_engineered[feature] = 0
 
         # Select and order features consistently
-        X_engineered = X_engineered[self.feature_names]
+        X_engineered = X_engineered.reindex(columns=self.feature_names, fill_value=0)
 
         # Separate numerical features
         numerical_features = X_engineered.select_dtypes(

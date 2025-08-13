@@ -63,7 +63,8 @@ class TestDiabetesModelTrainer:
         """Create a model trainer instance."""
         with patch("models.train_diabetes_model.mlflow.set_experiment"):
             with patch("models.train_diabetes_model.mlflow.set_tracking_uri"):
-                return DiabetesModelTrainer(experiment_name="test_experiment")
+                with patch("models.train_diabetes_model.os.makedirs"):
+                    return DiabetesModelTrainer(experiment_name="test_experiment")
 
     def test_trainer_initialization(self, trainer):
         """Test trainer initialization."""
@@ -192,6 +193,7 @@ class TestDiabetesModelTrainer:
                 "models.train_diabetes_model.optuna.create_study"
             ) as mock_create_study,
             patch("models.train_diabetes_model.mlflow.start_run") as mock_start_run,
+            patch("models.train_diabetes_model.mlflow.log_param"),
             patch("models.train_diabetes_model.mlflow.log_params"),
             patch("models.train_diabetes_model.mlflow.log_metric"),
             patch("models.train_diabetes_model.mlflow.sklearn.log_model"),
@@ -238,6 +240,7 @@ class TestDiabetesModelTrainer:
                 "models.train_diabetes_model.optuna.create_study"
             ) as mock_create_study,
             patch("models.train_diabetes_model.mlflow.start_run") as mock_start_run,
+            patch("models.train_diabetes_model.mlflow.log_param"),
             patch("models.train_diabetes_model.mlflow.log_params"),
             patch("models.train_diabetes_model.mlflow.log_metric"),
             patch("models.train_diabetes_model.mlflow.sklearn.log_model"),
@@ -391,7 +394,8 @@ class TestMLflowIntegration:
 
     @patch("models.train_diabetes_model.mlflow.set_experiment")
     @patch("models.train_diabetes_model.mlflow.set_tracking_uri")
-    def test_mlflow_setup(self, mock_set_uri, mock_set_experiment):
+    @patch("models.train_diabetes_model.os.makedirs")
+    def test_mlflow_setup(self, mock_makedirs, mock_set_uri, mock_set_experiment):
         """Test MLflow setup."""
         trainer = DiabetesModelTrainer(experiment_name="test_mlflow")
         # trainer object created and MLflow should be configured

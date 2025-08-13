@@ -49,6 +49,7 @@ class DiabetesModelTrainer:
         mlflow.set_experiment(self.experiment_name)
 
         # Set MLflow tracking URI
+        os.makedirs("models", exist_ok=True)
         os.makedirs("models/artifacts", exist_ok=True)
         mlflow.set_tracking_uri("sqlite:///models/artifacts/mlflow.db")
 
