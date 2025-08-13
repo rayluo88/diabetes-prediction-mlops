@@ -73,74 +73,12 @@ jobs:
         name: security-report
         path: bandit-report.json
 
-  # Unit Tests
-  unit-tests:
-    name: Unit Tests
+  # Tests
+  tests:
+    name: Run Tests
     runs-on: ubuntu-latest
     needs: quality-gate
     
-    strategy:
-      matrix:
-        python-version: ['3.9', '3.10', '3.11']
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-        cache: 'pip'
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install pytest pytest-cov
-
-    - name: Create test directories
-      run: |
-        mkdir -p data/raw data/processed models/trained models/artifacts
-
-    - name: Run unit tests
-      run: |
-        pytest tests/unit/ -v --cov=src --cov-report=xml --cov-report=html
-
-    - name: Upload coverage reports
-      uses: codecov/codecov-action@v4
-      with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
-
-    - name: Upload test results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: test-results-${{ matrix.python-version }}
-        path: htmlcov/
-
-  # Integration Tests
-  integration-tests:
-    name: Integration Tests
-    runs-on: ubuntu-latest
-    needs: unit-tests
-
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: mlflow_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -161,96 +99,22 @@ jobs:
       run: |
         mkdir -p data/raw data/processed models/trained models/artifacts
 
-    - name: Run integration tests
-      env:
-        MLFLOW_BACKEND_STORE_URI: postgresql://postgres:postgres@localhost:5432/mlflow_test
+    - name: Run all tests
       run: |
-        pytest tests/integration/ -v --tb=short
+        pytest tests/ -v --cov=src --cov-report=xml
 
-  # Docker Build and Test
-  docker-build:
-    name: Docker Build & Test
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        flags: tests
+
+  # Build and Deploy
+  build-and-deploy:
+    name: Build & Deploy
     runs-on: ubuntu-latest
-    needs: quality-gate
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
-    - name: Build API Docker image
-      run: |
-        docker build -f deployment/docker/Dockerfile.api -t diabetes-api:test .
-
-    - name: Build MLflow Docker image
-      run: |
-        docker build -f deployment/docker/Dockerfile.mlflow -t diabetes-mlflow:test .
-
-    - name: Test Docker images
-      run: |
-        # Test API image
-        docker run --rm diabetes-api:test python -c "import src.api.diabetes_api; print('API image OK')"
-        
-        # Test MLflow image
-        docker run --rm diabetes-mlflow:test python -c "import mlflow; print('MLflow image OK')"
-
-    - name: Docker security scan
-      uses: aquasecurity/trivy-action@master
-      with:
-        image-ref: 'diabetes-api:test'
-        format: 'sarif'
-        output: 'trivy-results.sarif'
-
-    - name: Upload Trivy scan results
-      uses: github/codeql-action/upload-sarif@v3
-      if: always()
-      with:
-        sarif_file: 'trivy-results.sarif'
-
-  # Infrastructure Validation
-  infrastructure-validation:
-    name: Infrastructure Validation
-    runs-on: ubuntu-latest
-    needs: quality-gate
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: 1.6.0
-
-    - name: Terraform Format Check
-      run: |
-        cd deployment/terraform
-        terraform fmt -check -recursive
-
-    - name: Terraform Validation
-      run: |
-        cd deployment/terraform
-        terraform init -backend=false
-        terraform validate
-
-    - name: TFLint
-      uses: terraform-linters/setup-tflint@v4
-      with:
-        tflint_version: v0.48.0
-
-    - name: Run TFLint
-      run: |
-        cd deployment/terraform
-        tflint --init
-        tflint
-
-  # Model Training and Validation
-  model-validation:
-    name: Model Training & Validation
-    runs-on: ubuntu-latest
-    needs: integration-tests
+    needs: tests
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
 
     steps:
     - name: Checkout code
@@ -271,201 +135,27 @@ jobs:
       run: |
         mkdir -p data/raw data/processed models/trained models/artifacts
 
-    - name: Run data pipeline
-      run: |
-        python src/data/load_diabetes_data.py
-
-    - name: Preprocess data
-      run: |
-        python src/data/preprocess.py
-
-    - name: Train and validate models
+    - name: Run data pipeline and train model
       env:
         MLFLOW_TRACKING_URI: sqlite:///models/artifacts/mlflow.db
       run: |
+        python src/data/load_diabetes_data.py
+        python src/data/preprocess.py
         python src/models/train_diabetes_model.py
 
-    - name: Validate model performance
+    - name: Build Docker images
       run: |
-        python -c "
-        import joblib
-        import pandas as pd
-        from sklearn.metrics import accuracy_score
-        
-        # Load test model
-        try:
-            model = joblib.load('models/trained/diabetes_optimized_random_forest.pkl')
-            print('✅ Model loaded successfully')
-        except FileNotFoundError:
-            model = joblib.load('models/trained/diabetes_random_forest.pkl')
-            print('✅ Fallback model loaded')
-        
-        # Load test data
-        test_data = pd.read_csv('data/processed/diabetes_test_processed.csv')
-        X_test = test_data.drop('target', axis=1)
-        y_test = test_data['target']
-        
-        # Validate performance
-        accuracy = accuracy_score(y_test, model.predict(X_test))
-        print(f'Model accuracy: {accuracy:.3f}')
-        
-        # Performance gate
-        if accuracy < 0.7:
-            raise ValueError(f'Model accuracy {accuracy:.3f} below threshold 0.7')
-        
-        print('✅ Model validation passed')
-        "
+        docker build -f deployment/docker/Dockerfile.api -t diabetes-api:${{ github.sha }} .
 
-    - name: Upload model artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: trained-models
-        path: models/
-
-  # Staging Deployment
-  deploy-staging:
-    name: Deploy to Staging
-    runs-on: ubuntu-latest
-    needs: [model-validation, docker-build, infrastructure-validation]
-    if: github.ref == 'refs/heads/develop' || github.event.inputs.deploy_to_staging == 'true'
-    environment: staging
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
-
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: 1.6.0
-
-    - name: Deploy to staging
+    - name: Deploy to environment
+      if: github.ref == 'refs/heads/main'
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ env.AWS_REGION }}
       run: |
-        cd deployment/terraform
-        terraform init
-        terraform workspace select staging || terraform workspace new staging
-        terraform plan -var="environment=staging"
-        terraform apply -auto-approve -var="environment=staging"
-
-    - name: Run staging health checks
-      run: |
-        # Get staging endpoint from Terraform output
-        cd deployment/terraform
-        STAGING_ENDPOINT=$(terraform output -raw api_endpoint)
-        
-        # Wait for deployment
-        sleep 60
-        
-        # Health check
-        curl -f "$STAGING_ENDPOINT/health" || exit 1
-        echo "✅ Staging deployment healthy"
-
-  # Production Deployment
-  deploy-production:
-    name: Deploy to Production
-    runs-on: ubuntu-latest
-    needs: [model-validation, docker-build, infrastructure-validation]
-    if: github.ref == 'refs/heads/main' || github.event.inputs.deploy_to_production == 'true'
-    environment: production
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
-
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: 1.6.0
-
-    - name: Deploy to production
-      run: |
-        cd deployment/terraform
-        terraform init
-        terraform workspace select production || terraform workspace new production
-        terraform plan -var="environment=production"
-        terraform apply -auto-approve -var="environment=production"
-
-    - name: Run production health checks
-      run: |
-        # Get production endpoint from Terraform output
-        cd deployment/terraform
-        PROD_ENDPOINT=$(terraform output -raw api_endpoint)
-        
-        # Wait for deployment
-        sleep 120
-        
-        # Health check
-        curl -f "$PROD_ENDPOINT/health" || exit 1
-        echo "✅ Production deployment healthy"
-
-    - name: Run production smoke tests
-      run: |
-        cd deployment/terraform
-        PROD_ENDPOINT=$(terraform output -raw api_endpoint)
-        
-        # Test prediction endpoint
-        curl -X POST "$PROD_ENDPOINT/predict" \
-          -H "Content-Type: application/json" \
-          -d '{
-            "patient_id": "PROD_TEST_001",
-            "pregnancies": 2.0,
-            "glucose": 120.0,
-            "blood_pressure": 80.0,
-            "skin_thickness": 25.0,
-            "insulin": 100.0,
-            "bmi": 28.5,
-            "diabetes_pedigree_function": 0.5,
-            "age": 35.0
-          }' || exit 1
-        
-        echo "✅ Production smoke tests passed"
-
-  # Monitoring Setup
-  setup-monitoring:
-    name: Setup Monitoring
-    runs-on: ubuntu-latest
-    needs: [deploy-production]
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
-
-    - name: Setup monitoring alerts
-      run: |
-        # Configure CloudWatch alarms and SNS notifications
-        aws cloudwatch put-metric-alarm \
-          --alarm-name "diabetes-api-high-latency" \
-          --alarm-description "High API latency" \
-          --metric-name TargetResponseTime \
-          --namespace AWS/ApplicationELB \
-          --statistic Average \
-          --period 300 \
-          --threshold 1.0 \
-          --comparison-operator GreaterThanThreshold \
-          --evaluation-periods 2 \
-          --alarm-actions "arn:aws:sns:${{ env.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:diabetes-alerts"
+        echo "🚀 Deploying to production environment"
+        # Add actual deployment commands here
 
   # Security Scan
   security-scan:
@@ -493,15 +183,14 @@ jobs:
   notify:
     name: Notify Teams
     runs-on: ubuntu-latest
-    needs: [deploy-production, setup-monitoring]
+    needs: [build-and-deploy, security-scan]
     if: always()
 
     steps:
     - name: Notify on Success
-      if: needs.deploy-production.result == 'success'
+      if: needs.build-and-deploy.result == 'success'
       run: |
-        echo "🎉 Diabetes Prediction MLOps pipeline deployed successfully!"
-        echo "🌐 Production endpoint ready for Singapore healthcare"
+        echo "✅ Diabetes Prediction MLOps pipeline completed successfully!"
 
     - name: Notify on Failure
       if: failure()

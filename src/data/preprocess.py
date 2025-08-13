@@ -65,7 +65,7 @@ class DiabetesPreprocessor:
 
         # BMI categories
         df_engineered["bmi_category"] = pd.cut(
-            df_engineered["bmi"],
+            df_engineered["mass"],
             bins=[0, 18.5, 25, 30, 100],
             labels=["underweight", "normal", "overweight", "obese"],
             include_lowest=True,
@@ -81,7 +81,7 @@ class DiabetesPreprocessor:
 
         # Glucose categories
         df_engineered["glucose_category"] = pd.cut(
-            df_engineered["glucose"],
+            df_engineered["plas"],
             bins=[0, 100, 125, 200],
             labels=["normal", "prediabetic", "diabetic"],
             include_lowest=True,
