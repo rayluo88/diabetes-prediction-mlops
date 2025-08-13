@@ -400,12 +400,6 @@ make clean
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 📞 Contact
-
-- **Project Maintainer**: [Your Name](mailto:your.email@example.com)
-- **LinkedIn**: [Your LinkedIn Profile](https://linkedin.com/in/yourprofile)
-- **Project Repository**: [GitHub](https://github.com/rayluo88/diabetes-prediction-mlops)
-
 ## 🙏 Acknowledgments
 
 - **UCI Machine Learning Repository** for the diabetes dataset
