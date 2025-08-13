@@ -63,9 +63,16 @@ class DiabetesPreprocessor:
 
         df_engineered = df.copy()
 
+        # Handle column naming variations
+        bmi_col = "bmi" if "bmi" in df_engineered.columns else "mass"
+        glucose_col = "glucose" if "glucose" in df_engineered.columns else "plas"
+        pregnancies_col = (
+            "pregnancies" if "pregnancies" in df_engineered.columns else "preg"
+        )
+
         # BMI categories
         df_engineered["bmi_category"] = pd.cut(
-            df_engineered["mass"],
+            df_engineered[bmi_col],
             bins=[0, 18.5, 25, 30, 100],
             labels=["underweight", "normal", "overweight", "obese"],
             include_lowest=True,
@@ -81,7 +88,7 @@ class DiabetesPreprocessor:
 
         # Glucose categories
         df_engineered["glucose_category"] = pd.cut(
-            df_engineered["plas"],
+            df_engineered[glucose_col],
             bins=[0, 100, 125, 200],
             labels=["normal", "prediabetic", "diabetic"],
             include_lowest=True,
@@ -89,15 +96,15 @@ class DiabetesPreprocessor:
 
         # Interaction features
         df_engineered["bmi_age_interaction"] = (
-            df_engineered["bmi"] * df_engineered["age"]
+            df_engineered[bmi_col] * df_engineered["age"]
         )
-        df_engineered["glucose_bmi_ratio"] = df_engineered["glucose"] / (
-            df_engineered["bmi"] + 1e-8
+        df_engineered["glucose_bmi_ratio"] = df_engineered[glucose_col] / (
+            df_engineered[bmi_col] + 1e-8
         )
 
         # Pregnancy risk (for females)
         df_engineered["high_pregnancy_risk"] = (
-            df_engineered["pregnancies"] > 5
+            df_engineered[pregnancies_col] > 5
         ).astype(int)
 
         # Convert categorical features to dummy variables
