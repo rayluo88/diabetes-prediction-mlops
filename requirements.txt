@@ -12,7 +12,7 @@ plotly>=5.17.0
 # ML/MLOps
 mlflow>=2.8.0
 evidently>=0.4.0
-luigi>=3.4.0
+prefect>=2.14.0
 optuna>=3.4.0
 
 # API/Web
