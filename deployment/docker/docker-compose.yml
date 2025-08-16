@@ -12,8 +12,6 @@ services:
       POSTGRES_DB: mlflow
       POSTGRES_USER: mlflow
       POSTGRES_PASSWORD: mlflow_password
-      POSTGRES_MULTIPLE_DATABASES: mlflow,prefect
-      POSTGRES_MULTIPLE_USERS: mlflow:mlflow_password,prefect:prefect_password
     ports:
       - "5432:5432"
     volumes:
@@ -75,23 +73,20 @@ services:
     networks:
       - diabetes-network
 
-  # Prefect Server
-  prefect:
-    image: prefecthq/prefect:2.14.21-python3.11
-    container_name: diabetes-prefect
-    environment:
-      PREFECT_UI_URL: http://127.0.0.1:4200/api
-      PREFECT_API_URL: http://127.0.0.1:4200/api
-      PREFECT_SERVER_API_HOST: 0.0.0.0
-      PREFECT_API_DATABASE_CONNECTION_URL: postgresql://prefect:prefect_password@postgres:5432/prefect
+  # Luigi Central Scheduler
+  luigi:
+    build:
+      context: ../..
+      dockerfile: deployment/docker/Dockerfile.luigi
+    container_name: diabetes-luigi
     ports:
-      - "4200:4200"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    command: prefect server start --host 0.0.0.0 --port 4200
+      - "8082:8082"
+    command: luigid --port 8082 --pidfile /var/run/luigi.pid --logdir /var/log/luigi --state-path /var/lib/luigi/luigi-state.pickle
+    volumes:
+      - luigi_data:/var/lib/luigi
+      - luigi_logs:/var/log/luigi
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4200/api/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8082/"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -201,6 +196,8 @@ volumes:
   minio_data:
   grafana_data:
   prometheus_data:
+  luigi_data:
+  luigi_logs:
 
 networks:
   diabetes-network:

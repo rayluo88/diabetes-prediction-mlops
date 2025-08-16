@@ -106,17 +106,17 @@ run-monitoring: ## Run model monitoring pipeline
 	@echo "✅ Monitoring complete!"
 
 # Workflow Commands
-run-prefect-training: ## Run Prefect training pipeline
-	@echo "🔄 Running Prefect training pipeline..."
-	python src/workflows/training_pipeline.py
+run-luigi-training: ## Run Luigi training pipeline
+	@echo "🔄 Running Luigi training pipeline..."
+	python src/workflows/luigi_training_pipeline.py DiabetesTrainingPipeline --local-scheduler
 
-run-prefect-monitoring: ## Run Prefect monitoring pipeline
-	@echo "📊 Running Prefect monitoring pipeline..."
-	python src/workflows/monitoring_pipeline.py
+run-luigi-monitoring: ## Run Luigi monitoring pipeline
+	@echo "📊 Running Luigi monitoring pipeline..."
+	python src/workflows/luigi_monitoring_pipeline.py DiabetesMonitoringPipeline --local-scheduler
 
-run-prefect-server: ## Start Prefect web server
-	@echo "🌐 Starting Prefect web server..."
-	prefect server start --host 0.0.0.0 --port 4200
+run-luigi-server: ## Start Luigi web server
+	@echo "🌐 Starting Luigi web server..."
+	luigid --background --port 8082
 
 run-mlflow-ui: ## Start MLflow UI
 	@echo "📊 Starting MLflow UI..."
@@ -127,6 +127,7 @@ docker-build: ## Build all Docker images
 	@echo "🐳 Building Docker images..."
 	docker build -f deployment/docker/Dockerfile.api -t diabetes-api:latest .
 	docker build -f deployment/docker/Dockerfile.mlflow -t diabetes-mlflow:latest .
+	docker build -f deployment/docker/Dockerfile.luigi -t diabetes-luigi:latest .
 	@echo "✅ Docker images built!"
 
 docker-run: ## Run local Docker stack
@@ -136,7 +137,7 @@ docker-run: ## Run local Docker stack
 	@echo "🌐 Services available at:"
 	@echo "  - API: http://localhost:8000"
 	@echo "  - MLflow: http://localhost:5000"
-	@echo "  - Prefect: http://localhost:4200"
+	@echo "  - Luigi: http://localhost:8082"
 	@echo "  - Grafana: http://localhost:3000"
 
 docker-stop: ## Stop Docker stack
@@ -214,7 +215,7 @@ monitoring-dashboard: ## Open monitoring dashboard
 	@echo "📊 Opening monitoring dashboard..."
 	@echo "🌐 Available dashboards:"
 	@echo "  - MLflow: http://localhost:5000"
-	@echo "  - Prefect: http://localhost:4200"
+	@echo "  - Luigi: http://localhost:8082"
 	@echo "  - Grafana: http://localhost:3000"
 	@echo "  - Evidently: http://localhost:8085"
 
@@ -247,10 +248,10 @@ dev-setup: ## Quick development environment setup
 	@echo "✅ Development environment ready!"
 
 full-pipeline: ## Run complete ML pipeline
-	@echo "🔄 Running complete Prefect pipeline..."
+	@echo "🔄 Running complete Luigi pipeline..."
 	$(MAKE) run-data-pipeline
-	$(MAKE) run-prefect-training
-	$(MAKE) run-prefect-monitoring
+	$(MAKE) run-luigi-training
+	$(MAKE) run-luigi-monitoring
 	@echo "✅ Complete pipeline finished!"
 
 # Project Information
