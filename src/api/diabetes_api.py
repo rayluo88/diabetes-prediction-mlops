@@ -91,6 +91,7 @@ async def load_model_and_preprocessor():
         # Import the class and ensure it's available for pickle deserialization
         # Register in main module namespace to fix pickle module resolution
         import __main__
+
         __main__.DiabetesPreprocessor = DiabetesPreprocessor
 
         # Load preprocessor
