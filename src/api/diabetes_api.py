@@ -79,6 +79,20 @@ async def load_model_and_preprocessor():
             model = joblib.load(model_path)
             model_version = "fallback_v1"
 
+        # Import and register DiabetesPreprocessor for pickle deserialization
+        import os
+        import sys
+
+        # Add src to path if not already there
+        src_path = os.path.join(os.path.dirname(os.path.dirname(__file__)))
+        if src_path not in sys.path:
+            sys.path.insert(0, src_path)
+
+        # Import the class and ensure it's available for pickle deserialization
+        # Register in main module namespace to fix pickle module resolution
+        import __main__
+        __main__.DiabetesPreprocessor = DiabetesPreprocessor
+
         # Load preprocessor
         preprocessor_path = "models/artifacts/diabetes_preprocessor.pkl"
         preprocessor = DiabetesPreprocessor.load(preprocessor_path)

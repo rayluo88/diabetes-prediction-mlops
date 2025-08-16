@@ -36,7 +36,28 @@ This project implements a comprehensive MLOps solution for predicting diabetes o
 - **Features**: 8 medical diagnostic features
 - **Target**: Binary classification (diabetic/non-diabetic)
 - **Size**: 768 patient records
-- **Relevance**: Critical for Singapore's diabetes prevention strategy
+
+### 🇸🇬 Dataset Choice Rationale for Singapore
+
+**Why UCI Pima Indian Diabetes Dataset?**
+
+Currently, **no public diabetes dataset exists specifically for the Singapore population**. The UCI Pima Indian Diabetes dataset is chosen for the following reasons:
+
+1. **🏥 Clinical Relevance**: Contains medically validated diagnostic features (glucose, BMI, blood pressure) that are universally applicable across populations
+2. **📊 Proven Utility**: Widely used benchmark dataset in diabetes research with established baseline metrics
+3. **🔬 Research Foundation**: Enables comparison with existing studies and methodologies
+4. **⚖️ Regulatory Compliance**: Public dataset with no privacy concerns for demonstration purposes
+5. **🎯 Prototype Development**: Ideal for building and validating MLOps infrastructure before real-world deployment
+
+### 🚀 Future Implementation for Singapore
+
+Once deployed in Singapore's healthcare system, this MLOps pipeline can be adapted to use:
+- **Local patient data** (with proper anonymization and consent)
+- **Singapore-specific risk factors** (ethnicity, genetic markers, lifestyle)
+- **Population-adjusted thresholds** for different ethnic groups (Chinese, Malay, Indian, Others)
+- **Regional clinical guidelines** from Singapore Ministry of Health
+
+**Relevance**: Critical foundation for Singapore's diabetes prevention strategy and MLOps best practices implementation
 
 ### Features Description
 | Feature | Description | Clinical Relevance |
@@ -114,7 +135,13 @@ make setup
 make run-pipeline
 make start-services
 
-# Or manually
+# Or manually with orchestration
+docker-compose up -d postgres minio mlflow prefect  # Start services
+python src/workflows/training_pipeline.py           # Run orchestrated training
+python src/workflows/prediction_pipeline.py         # Run batch predictions
+uvicorn src.api.diabetes_api:app --reload          # Start API service
+
+# Or basic manual pipeline (without orchestration)
 python src/data/load_diabetes_data.py
 python src/models/train_diabetes_model.py
 uvicorn src.api.diabetes_api:app --reload
@@ -124,7 +151,7 @@ uvicorn src.api.diabetes_api:app --reload
 
 ### Core MLOps Tools
 - **🔬 Experiment Tracking**: MLflow (tracking + model registry)
-- **🔄 Workflow Orchestration**: Luigi (lightweight, battle-tested)
+- **🔄 Workflow Orchestration**: Prefect (modern Python workflows)
 - **📊 Model Monitoring**: Evidently (drift detection + alerts)
 - **🚀 API Framework**: FastAPI (containerized deployment)
 - **☁️ Cloud Platform**: AWS (ECS, RDS, S3)
@@ -208,7 +235,19 @@ diabetes-prediction-mlops/
 
 ## 🔄 Workflows
 
-### 1. Data Pipeline
+### 1. Prefect Orchestrated Workflows
+```bash
+# Training Pipeline (includes data loading, preprocessing, and model training)
+python src/workflows/training_pipeline.py
+
+# Prediction Pipeline (batch predictions with monitoring)
+python src/workflows/prediction_pipeline.py
+
+# Monitoring Pipeline (drift detection and alerts)
+python src/workflows/monitoring_pipeline.py
+```
+
+### 2. Manual Data Pipeline (if running without orchestration)
 ```bash
 # Load UCI diabetes dataset
 python src/data/load_diabetes_data.py
@@ -218,7 +257,7 @@ python src/data/preprocess.py
 python src/data/feature_engineering.py
 ```
 
-### 2. Model Training & Tracking
+### 3. Model Training & Tracking
 ```bash
 # Train with MLflow experiment tracking
 python src/models/train_diabetes_model.py
@@ -231,7 +270,7 @@ mlflow ui
 # Access at http://localhost:5000
 ```
 
-### 3. Model Deployment
+### 4. Model Deployment
 ```bash
 # Start FastAPI service locally
 uvicorn src.api.diabetes_api:app --reload
@@ -243,14 +282,24 @@ terraform plan
 terraform apply
 ```
 
-### 4. Monitoring & Alerts
+### 5. Workflow Orchestration & Monitoring
 ```bash
-# Run Luigi monitoring pipeline
-make run-luigi-monitoring
+# Start Prefect server (via docker-compose)
+docker-compose up -d prefect
+# Access Prefect UI at http://localhost:4200
 
-# Start Luigi web server
-make run-luigi-server
-# Access at http://localhost:8082
+# Run individual Prefect workflows (using Makefile)
+make run-prefect-training      # Model training workflow
+make run-prefect-prediction    # Batch prediction workflow
+make run-prefect-monitoring    # Monitoring & drift detection workflow
+
+# Or run workflows directly
+python src/workflows/training_pipeline.py      # Model training workflow
+python src/workflows/prediction_pipeline.py    # Batch prediction workflow
+python src/workflows/monitoring_pipeline.py    # Monitoring & drift detection workflow
+
+# Run complete pipeline
+make full-pipeline
 ```
 
 ## 🧪 Testing
@@ -373,28 +422,6 @@ make clean
 - **Type Hints**: Required for all functions
 - **Documentation**: Docstrings for all modules
 - **Linting**: black + flake8 compliance
-
-## 📈 Roadmap
-
-### Phase 1: Core Implementation ✅
-- [x] Data pipeline and preprocessing
-- [x] MLflow experiment tracking
-- [x] Basic model training
-
-### Phase 2: MLOps Infrastructure 🚧
-- [ ] Prefect workflow orchestration
-- [ ] FastAPI deployment
-- [ ] Evidently monitoring
-
-### Phase 3: Production Deployment 📋
-- [ ] AWS infrastructure with Terraform
-- [ ] CI/CD pipeline
-- [ ] Comprehensive monitoring
-
-### Phase 4: Advanced Features 🔮
-- [ ] A/B testing framework
-- [ ] Model interpretability dashboard
-- [ ] Real-time streaming predictions
 
 ## 📄 License
 
